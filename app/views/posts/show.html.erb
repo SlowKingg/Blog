@@ -1,0 +1,70 @@
+<% if current_user.id == @user_owner.id || !@post.draft? %> 
+  <article class="post">
+    <section class="post-head">
+      <h1><%= link_to @user_owner.email, profile_path(@user_owner.id) %></h1>
+      <h1><%= @post.title %></h1>
+      <smal>
+        <time><%= @post.created_at.to_date.strftime("%d, %B, %Y") %></time>
+        <% if user_signed_in? && (current_user.rank == 2 || current_user.id == @post.user_id || (current_user.rank == 1 && @user_owner.rank == 0)) %>
+  	      <%= link_to 'Edit', edit_post_path(@post) %>
+  	      <%= link_to 'Destroy', post_path(@post), method: :delete, data: { confirm: 'Are you sure?' } %>
+  	    <% end %> 
+      </smal>
+    </section>
+
+    <section class="post-body">
+    	<%= image_tag @post.image.url(:large), class: 'img-show' if @post.image? %>
+      <%= @post.body.html_safe %>
+    </section>
+    <br>
+
+    <% if user_signed_in? %>
+      <% if !@post.draft? %>
+        <%= form_for([@post, @post.likes.build]) do |like| %>
+          <% if !@post.likes.exists?(user_id: current_user.id) %>
+            <p class="form-group">
+              <%= like.submit 'like', class: 'btn btn-primary' %>
+               <%= @post.likes.count %>
+            </p>
+          <% end %>
+        <% end %>
+        
+        <% @post.likes.where(user_id: current_user.id).each do |like| %>
+          <p class="form-group">
+            <%= link_to 'dislike', [like.post, like], :method => :delete, class: 'btn btn-primary' %>
+              <%= @post.likes.count %>
+          </p>
+        <% end %>
+      <% end %>
+    <% end %>
+    <br>
+
+    <% if !@post.draft %>
+      <h2>Comments</h2>
+
+      <% @post.comments.each do |comment| %>
+        <time><%= @post.created_at.to_date.strftime("%d, %B, %Y") %></time>
+          <% if user_signed_in? && (current_user.rank == 2 || current_user.email == comment.email || (current_user.rank == 1 && @user_owner.rank == 0)) %>
+            <%= link_to 'Destroy', post_comment_path(comment), method: :delete, data: { confirm: 'Are you sure?' } %>
+          <% end %> 
+        <p><strong><%= comment.email %></strong>: <%= comment.body %></p>
+        <br>
+      <% end %>
+
+      <% if user_signed_in? %>
+        <%= form_for([@post, @post.comments.build]) do |comment| %>
+          
+          <p class="form-group">
+            <%= comment.text_field :body, class: 'form-control' %>
+          </p>
+
+          <p class="form-group">
+            <%= comment.submit 'add comment', class: 'btn btn-primary' %>
+          </p>
+        <% end %>
+      <% end %>
+    <% end %>
+
+  </article>
+  <br>
+<% end %>

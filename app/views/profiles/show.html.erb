@@ -1,0 +1,52 @@
+<h1><%= @user.email %></h1> 
+<% if user_signed_in? %>
+	<% if current_user.rank == 2 %>
+		<% if @user.rank == 0 %>
+			<ul class="navbar-nav pull-xs-right">
+				<li class="nav-item">
+					<%= link_to 'make a moderator', moderator_path(@user.id) %>
+				</li>
+			</ul>
+		<% elsif @user.rank == 1%>
+			<ul class="navbar-nav pull-xs-right">
+				<li class="nav-item">
+					<%= link_to 'make an ordinary mortal', del_moderator_path(@user.id) %>
+				</li>
+			</ul>
+		<% end %>
+	<% end %>
+	<% if current_user.rank == 2 && @user.rank != 2 || current_user.rank == 1 && @user.rank == 0%>
+		<% if !@user.ban || @user.ban <= Time.zone.now %>
+			<ul class="navbar-nav pull-xs-right">
+				<li class="nav-item">
+					<%= link_to 'ban', ban_path(@user.id) %>
+				</li>
+			</ul>
+		<% else %>
+			<ul class="navbar-nav pull-xs-right">
+				<li class="nav-item">
+					<%= link_to 'disban', unban_path(@user.id) %>
+				</li>
+			</ul>
+		<% end %>
+	<% end %>
+<% end %>
+likes: <%= @my_mmr %>
+<br><br>
+<% if @user.posts.where(draft: :false).count != 0 %>
+	<% if user_signed_in? && @user.id == current_user.id %>
+		<h2>my posts:</h2>
+	<% else %>
+		<h2>posts:</h2>
+	<% end %>
+<% end %>
+
+<section id='posts'>
+	<%= render @user.posts.where(draft: :false).order(updated_at: :desc) %>
+</section>
+<% if user_signed_in? && current_user.id == @user.id && @user.posts.where(draft: :true).count != 0 %>
+	<section id='posts'>
+		<h2>my drafts:</h2>
+		<%= render @user.posts.where(draft: :true).order(updated_at: :desc) %>
+	</section>
+<% end %>

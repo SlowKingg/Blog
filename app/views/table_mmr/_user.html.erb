@@ -1,0 +1,21 @@
+<article class='mmr'>
+  <section class="post-head">
+  	<% i = 1 %>
+    <% users_have_posts.each do |user| %>
+		<h2><%= i %>. <%= link_to user.email, profile_path(user.id) %><% if user.rank == 2 %> admin<% elsif user.rank == 1 %> moderator <% end %> </h2>
+		<% temp = 0 %>
+		<% user.posts.each do |post| %>
+			<% temp += post.likes.count %>
+		<% end %>
+		<h4 style="margin-left: 1em">likes: <%= temp %></h4>
+		<% i = i + 1 %>
+	<% end %>
+	<% users_have_not_posts.each do |user| %>
+		<h2><%= i %>. <%= link_to user.email, profile_path(user.id) %><% if user.rank == 2 %> admin<% elsif user.rank == 1 %> moderator <% end %> </h2>
+		<% temp = 0 %>
+		<h4 style="margin-left: 1em">likes: <%= temp %></h4>
+		<% i = i + 1 %>
+	<% end %>
+  </section>
+</article>
+<br>

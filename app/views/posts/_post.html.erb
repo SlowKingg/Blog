@@ -1,0 +1,19 @@
+<article class="post">
+  <section class="post-head">
+
+    <h2><%= link_to post.title, post_path(post) %></h2>
+    <smal>
+      <time><%= post.created_at.to_date.strftime("%d, %B, %Y") %></time>
+      <% if post.draft %>
+        draft
+      <% end %>
+    </smal>
+  </section>
+
+  <section class="post-summary clearfix">
+    <%= image_tag post.image.url(:thumb), class: 'img-thumbnail thumb' if post.image? %>
+    <%= post.summary %>
+  </section>
+</article>
+<br>
+

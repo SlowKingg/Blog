@@ -1,0 +1,3 @@
+<h1><article class="head">Table mmr</article></h1>
+
+<%= render 'user', users_have_posts: @users.joins(:posts).group('id').order('SUM(count_like) desc' ), users_have_not_posts: @users.left_outer_joins(:posts).group('users.id').having('count(posts) = 0') %>
